@@ -4,7 +4,7 @@
             "outputFile": "com.example.iot_client.app-mergeDebugResources-24:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\user\\Full_service Programming\\iot_client\\android\\app\\src\\main\\res\\values-night\\styles.xml",
+                    "source": "C:\\Users\\user\\iot_client\\android\\app\\src\\main\\res\\values-night\\styles.xml",
                     "from": {
                         "startLines": "3,14",
                         "startColumns": "4,4",

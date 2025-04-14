@@ -82,7 +82,8 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 40.0),
               child: Divider(
                 thickness: 1,
-                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+                color:
+                    Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
               ),
             ),
 
@@ -105,7 +106,7 @@ class _HomePageState extends State<HomePage> {
             // grid
             Expanded(
               child: GridView.builder(
-                itemCount: widget.devices.length + 1,
+                itemCount: widget.devices.length,
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 25),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -118,7 +119,8 @@ class _HomePageState extends State<HomePage> {
                     smartDeviceName: device.name,
                     iconPath: device.iconPath,
                     powerOn: device.powerOn,
-                    onChanged: (value) => widget.onDevicePowerChanged(index, value),
+                    onChanged: (value) =>
+                        widget.onDevicePowerChanged(index, value),
                   );
                 },
               ),
@@ -142,7 +144,8 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.95),
+        backgroundColor:
+            Theme.of(context).colorScheme.surface.withOpacity(0.95),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
@@ -167,12 +170,18 @@ class _HomePageState extends State<HomePage> {
                   color: Theme.of(context).colorScheme.onBackground,
                 ),
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onBackground
+                      .withOpacity(0.5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onBackground
+                        .withOpacity(0.2),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -198,7 +207,10 @@ class _HomePageState extends State<HomePage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onBackground
+                        .withOpacity(0.2),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
