@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
             // grid
             Expanded(
               child: GridView.builder(
-                itemCount: widget.devices.length + 1,
+                itemCount: widget.devices.length,
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 25),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
