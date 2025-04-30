@@ -1,4 +1,36 @@
 # https://dart.dev/guides/libraries/private-files
 # Created by `dart pub`
 .dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
 build/
+
+# IDE specific
+.idea/
+*.iml
+
+# Android specific
+android/app/debug
+android/app/profile
+android/app/release
+android/.gradle
+android/local.properties
+android/gradlew
+android/gradlew.bat
+android/gradle/
+android/build/
+
+# iOS specific
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+
+# Project specific
+*.log
+*.pyc
+__pycache__/
+.DS_Store

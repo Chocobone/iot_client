@@ -92,15 +92,15 @@ class _MainPageState extends State<MainPage> {
       powerOn: false,
     ),
     Device(
-      name: "Smart fan",
-      iconPath: "lib/icons/fan.png",
+      name: "Smart TV",
+      iconPath: "lib/icons/light-bulb.png",
       isConnected: true,
       powerOn: true,
       locations: ["Bedroom", "Livingroom"],
     ),
     Device(
       name: "Robot Vacuum",
-      iconPath: "lib/icons/robot-vaccum.png",
+      iconPath: "lib/icons/robot_vacuum.png",
       isConnected: false,
       powerOn: false,
     ),

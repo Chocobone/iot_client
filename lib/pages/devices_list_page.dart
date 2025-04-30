@@ -17,14 +17,14 @@ class DevicesListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         title: Text(
           'Devices',
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onBackground,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -32,7 +32,7 @@ class DevicesListPage extends StatelessWidget {
           PopupMenuButton<String>(
             icon: Icon(
               Icons.more_vert,
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             onSelected: (value) {
               // Handle menu item selection
@@ -65,7 +65,7 @@ class DevicesListPage extends StatelessWidget {
                       onPressed: () => _showAddDeviceDialog(context),
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
-                          color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
@@ -74,13 +74,13 @@ class DevicesListPage extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.add_circle_outline,
-                            color: Theme.of(context).colorScheme.onBackground,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             'Add Device',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onBackground,
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -101,12 +101,12 @@ class DevicesListPage extends StatelessWidget {
                         device.iconPath,
                         width: 40,
                         height: 40,
-                        color: Theme.of(context).colorScheme.onBackground,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                       title: Text(
                         device.name,
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onBackground,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -115,7 +115,7 @@ class DevicesListPage extends StatelessWidget {
                         style: TextStyle(
                           color: device.powerOn
                               ? Colors.green
-                              : Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                              : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                         ),
                       ),
                       trailing: Switch(
@@ -154,7 +154,7 @@ class DevicesListPage extends StatelessWidget {
         title: Text(
           'Add New Device',
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onBackground,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -163,27 +163,27 @@ class DevicesListPage extends StatelessWidget {
           children: [
             TextField(
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               decoration: InputDecoration(
                 labelText: 'Device Name',
                 hintText: 'Enter device name',
                 labelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -193,23 +193,23 @@ class DevicesListPage extends StatelessWidget {
             DropdownButtonFormField<String>(
               value: selectedType,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               decoration: InputDecoration(
                 labelText: 'Device Type',
                 labelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -219,7 +219,7 @@ class DevicesListPage extends StatelessWidget {
                   child: Text(
                     type,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 );
@@ -238,7 +238,7 @@ class DevicesListPage extends StatelessWidget {
             child: Text(
               'Cancel',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
@@ -257,7 +257,7 @@ class DevicesListPage extends StatelessWidget {
             child: Text(
               'Add',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
               ),
             ),
