@@ -272,12 +272,39 @@ class DevicesListPage extends StatelessWidget {
               TextButton(
                 onPressed: () {
                   if (deviceName.isNotEmpty) {
-                    onDeviceAdded(
-                      Device(
-                        name: deviceName,
-                        iconPath: deviceTypes[selectedType]!,
-                      ),
-                    );
+                    Device newDevice;
+                    switch (selectedType) {
+                      case "Smart Light":
+                        newDevice = SmartLight(
+                          name: deviceName,
+                          iconPath: deviceTypes[selectedType]!,
+                        );
+                        break;
+                      case "Smart AC":
+                        newDevice = SmartAC(
+                          name: deviceName,
+                          iconPath: deviceTypes[selectedType]!,
+                        );
+                        break;
+                      case "Smart TV":
+                        newDevice = SmartTV(
+                          name: deviceName,
+                          iconPath: deviceTypes[selectedType]!,
+                        );
+                        break;
+                      case "Robot Vacuum":
+                        newDevice = RobotVacuum(
+                          name: deviceName,
+                          iconPath: deviceTypes[selectedType]!,
+                        );
+                        break;
+                      default:
+                        newDevice = SmartLight(
+                          name: deviceName,
+                          iconPath: deviceTypes[selectedType]!,
+                        );
+                    }
+                    onDeviceAdded(newDevice);
                     Navigator.pop(context);
                   }
                 },

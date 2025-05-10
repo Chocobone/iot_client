@@ -29,29 +29,30 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: _isDarkMode
-          ? ThemeData.dark().copyWith(
-              useMaterial3: true,
-              colorScheme: ColorScheme.dark(
-                primary: Colors.grey[800]!,
-                secondary: Colors.grey[700]!,
-                background: Colors.grey[900]!,
-                surface: const Color.fromARGB(44, 164, 167, 189),
-                onBackground: Colors.white,
-                onPrimary: Colors.white,
+      theme:
+          _isDarkMode
+              ? ThemeData.dark().copyWith(
+                useMaterial3: true,
+                colorScheme: ColorScheme.dark(
+                  primary: Colors.grey[800]!,
+                  secondary: Colors.grey[700]!,
+                  background: Colors.grey[900]!,
+                  surface: const Color.fromARGB(44, 164, 167, 189),
+                  onBackground: Colors.white,
+                  onPrimary: Colors.white,
+                ),
+              )
+              : ThemeData.light().copyWith(
+                useMaterial3: true,
+                colorScheme: ColorScheme.light(
+                  primary: Colors.grey[900]!,
+                  secondary: Colors.grey[700]!,
+                  background: Colors.grey[300]!,
+                  surface: const Color.fromARGB(44, 164, 167, 189),
+                  onBackground: Colors.grey[800]!,
+                  onPrimary: Colors.white,
+                ),
               ),
-            )
-          : ThemeData.light().copyWith(
-              useMaterial3: true,
-              colorScheme: ColorScheme.light(
-                primary: Colors.grey[900]!,
-                secondary: Colors.grey[700]!,
-                background: Colors.grey[300]!,
-                surface: const Color.fromARGB(44, 164, 167, 189),
-                onBackground: Colors.grey[800]!,
-                onPrimary: Colors.white,
-              ),
-            ),
       home: MainPage(
         isDarkMode: _isDarkMode,
         onDarkModeChanged: toggleDarkMode,
@@ -79,28 +80,28 @@ class _MainPageState extends State<MainPage> {
 
   // Shared devices list
   List<Device> devices = [
-    Device(
+    SmartLight(
       name: "Smart Light",
       iconPath: "lib/icons/light-bulb.png",
       isConnected: false,
       powerOn: false,
     ),
-    Device(
+    SmartAC(
       name: "Smart AC",
       iconPath: "lib/icons/air-conditioner.png",
       isConnected: false,
       powerOn: false,
     ),
-    Device(
+    SmartAC(
       name: "Smart fan",
       iconPath: "lib/icons/fan.png",
       isConnected: true,
       powerOn: true,
       locations: ["Bedroom", "Livingroom"],
     ),
-    Device(
+    RobotVacuum(
       name: "Robot Vacuum",
-      iconPath: "lib/icons/robot-vaccum.png",
+      iconPath: "lib/icons/robot-vacuum.png",
       isConnected: false,
       powerOn: false,
     ),
@@ -123,10 +124,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         type: BottomNavigationBarType.fixed,
@@ -136,14 +134,8 @@ class _MainPageState extends State<MainPage> {
           });
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.devices),
-            label: 'Devices',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.devices), label: 'Devices'),
           BottomNavigationBarItem(
             icon: Icon(Icons.schedule),
             label: 'Schedule',
@@ -159,20 +151,20 @@ class _MainPageState extends State<MainPage> {
 
   // List of pages with shared device state
   List<Widget> get _pages => [
-        HomePage(
-          devices: devices,
-          onDevicePowerChanged: updateDevicePower,
-          onDeviceAdded: addDevice,
-        ),
-        DevicesListPage(
-          devices: devices,
-          onDevicePowerChanged: updateDevicePower,
-          onDeviceAdded: addDevice,
-        ),
-        const SchedulePage(),
-        SettingsPage(
-          isDarkMode: widget.isDarkMode,
-          onDarkModeChanged: widget.onDarkModeChanged,
-        ),
-      ];
+    HomePage(
+      devices: devices,
+      onDevicePowerChanged: updateDevicePower,
+      onDeviceAdded: addDevice,
+    ),
+    DevicesListPage(
+      devices: devices,
+      onDevicePowerChanged: updateDevicePower,
+      onDeviceAdded: addDevice,
+    ),
+    const SchedulePage(),
+    SettingsPage(
+      isDarkMode: widget.isDarkMode,
+      onDarkModeChanged: widget.onDarkModeChanged,
+    ),
+  ];
 }
