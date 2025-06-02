@@ -140,8 +140,8 @@ class DevicesListPage extends StatelessWidget {
     Map<String, String> deviceTypes = {
       "Smart Light": "lib/icons/light-bulb.png",
       "Smart AC": "lib/icons/air-conditioner.png",
-      "Smart TV": "lib/icons/light-bulb.png",
-      "Robot Vacuum": "lib/icons/robot_vacuum.png",
+      "Smart TV": "lib/icons/TV.png",
+      "Robot Vaccum": "lib/icons/robot-vaccum.png",
     };
 
     showDialog(

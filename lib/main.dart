@@ -80,27 +80,8 @@ class _MainPageState extends State<MainPage> {
   // Shared devices list
   List<Device> devices = [
     Device(
-      name: "Smart Light",
-      iconPath: "lib/icons/light-bulb.png",
-      isConnected: false,
-      powerOn: false,
-    ),
-    Device(
-      name: "Smart AC",
-      iconPath: "lib/icons/air-conditioner.png",
-      isConnected: false,
-      powerOn: false,
-    ),
-    Device(
-      name: "Smart TV",
-      iconPath: "lib/icons/light-bulb.png",
-      isConnected: true,
-      powerOn: true,
-      locations: ["Bedroom", "Livingroom"],
-    ),
-    Device(
       name: "Robot Vacuum",
-      iconPath: "lib/icons/robot_vacuum.png",
+      iconPath: "lib/icons/robot-vaccum.png",
       isConnected: false,
       powerOn: false,
     ),

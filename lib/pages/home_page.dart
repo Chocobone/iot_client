@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
                   Icon(
                     Icons.person,
                     size: 45,
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onSurface,
                   )
                 ],
               ),
@@ -62,14 +62,14 @@ class _HomePageState extends State<HomePage> {
                     "Welcome Home,",
                     style: TextStyle(
                       fontSize: 20,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   Text(
                     'Carle YU',
                     style: GoogleFonts.bebasNeue(
                       fontSize: 72,
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 40.0),
               child: Divider(
                 thickness: 1,
-                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
               ),
             ),
 
@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -135,8 +135,8 @@ class _HomePageState extends State<HomePage> {
     Map<String, String> deviceTypes = {
       "Smart Light": "lib/icons/light-bulb.png",
       "Smart AC": "lib/icons/air-conditioner.png",
-      "Smart TV": "lib/icons/light-bulb.png",
-      "Robot Vacuum": "lib/icons/robot_vacuum.png",
+      "Smart TV": "lib/icons/TV.png",
+      "Robot Vaccum": "lib/icons/robot-vaccum.png",
     };
 
     showDialog(
@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
         title: Text(
           'Add New Device',
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onBackground,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -158,27 +158,27 @@ class _HomePageState extends State<HomePage> {
           children: [
             TextField(
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               decoration: InputDecoration(
                 labelText: 'Device Name',
                 hintText: 'Enter device name',
                 labelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -188,23 +188,23 @@ class _HomePageState extends State<HomePage> {
             DropdownButtonFormField<String>(
               value: selectedType,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               decoration: InputDecoration(
                 labelText: 'Device Type',
                 labelStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onBackground,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground.withOpacity(0.2),
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onBackground,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -214,7 +214,7 @@ class _HomePageState extends State<HomePage> {
                   child: Text(
                     type,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onBackground,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 );
@@ -233,7 +233,7 @@ class _HomePageState extends State<HomePage> {
             child: Text(
               'Cancel',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ),
@@ -252,7 +252,7 @@ class _HomePageState extends State<HomePage> {
             child: Text(
               'Add',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
               ),
             ),
