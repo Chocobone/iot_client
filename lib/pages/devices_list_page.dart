@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/device.dart';
 import '../util/smart_device_box.dart';
+import 'robot_vacuum_status_page.dart';
 
 class DevicesListPage extends StatelessWidget {
   final List<Device> devices;
@@ -123,6 +124,14 @@ class DevicesListPage extends StatelessWidget {
                         onChanged: (value) => onDevicePowerChanged(index, value),
                         activeColor: Colors.green,
                       ),
+                      onTap: () {
+                        if (device.name.toLowerCase().contains('vacuum')) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => RobotVacuumStatusPage(device: device),
+                          );
+                        }
+                      },
                     ),
                   ),
                 );
