@@ -30,4 +30,4 @@ class Device {
       locations: locations ?? this.locations,
     );
   }
-} 
+}

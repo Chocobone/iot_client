@@ -66,7 +66,10 @@ class DevicesListPage extends StatelessWidget {
                       onPressed: () => _showAddDeviceDialog(context),
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.2),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
@@ -93,7 +96,8 @@ class DevicesListPage extends StatelessWidget {
 
                 final device = devices[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
                   child: Card(
                     color: Theme.of(context).colorScheme.surface,
                     elevation: 2,
@@ -116,19 +120,43 @@ class DevicesListPage extends StatelessWidget {
                         style: TextStyle(
                           color: device.powerOn
                               ? Colors.green
-                              : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                              : Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.5),
                         ),
                       ),
-                      trailing: Switch(
-                        value: device.powerOn,
-                        onChanged: (value) => onDevicePowerChanged(index, value),
-                        activeColor: Colors.green,
+                      trailing: GestureDetector(
+                        onTap: () =>
+                            onDevicePowerChanged(index, !device.powerOn),
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: device.powerOn
+                                ? Colors.green
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.2),
+                          ),
+                          child: Icon(
+                            device.powerOn
+                                ? Icons.power_settings_new
+                                : Icons.power_off,
+                            color: device.powerOn
+                                ? Colors.white
+                                : Theme.of(context).colorScheme.onSurface,
+                            size: 24,
+                          ),
+                        ),
                       ),
                       onTap: () {
                         if (device.name.toLowerCase().contains('vacuum')) {
                           showDialog(
                             context: context,
-                            builder: (context) => RobotVacuumStatusPage(device: device),
+                            builder: (context) =>
+                                RobotVacuumStatusPage(device: device),
                           );
                         }
                       },
@@ -156,7 +184,8 @@ class DevicesListPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.95),
+        backgroundColor:
+            Theme.of(context).colorScheme.surface.withOpacity(0.95),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
@@ -181,12 +210,16 @@ class DevicesListPage extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.2),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -212,7 +245,10 @@ class DevicesListPage extends StatelessWidget {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.2),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -275,4 +311,4 @@ class DevicesListPage extends StatelessWidget {
       ),
     );
   }
-} 
+}
