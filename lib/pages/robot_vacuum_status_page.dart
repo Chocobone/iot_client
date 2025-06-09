@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import '../models/device.dart';
-
-enum VacuumState { start, pause, returnToDock }
+import '../services/vacuum_service.dart';
+import 'dart:async';
 
 class RobotVacuumStatusPage extends StatefulWidget {
   final Device device;
+  final VacuumService vacuumService;
 
   const RobotVacuumStatusPage({
     super.key,
     required this.device,
+    required this.vacuumService,
   });
 
   @override
@@ -16,199 +18,266 @@ class RobotVacuumStatusPage extends StatefulWidget {
 }
 
 class _RobotVacuumStatusPageState extends State<RobotVacuumStatusPage> {
-  VacuumState _currentState = VacuumState.pause;
-  double _batteryLevel = 75.0; // Example battery level
-  String _cleaningArea = "Living Room"; // Example cleaning area
-  Duration _cleaningTime = const Duration(minutes: 45); // Example cleaning time
+  bool _isLoading = false;
+  Timer? _statusTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // 1초마다 상태 업데이트
+    _statusTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _updateStatus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _statusTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _updateStatus() async {
+    final newStatus = await widget.vacuumService.getVacuumStatus();
+    if (newStatus != null && mounted) {
+      widget.device.updateVacuumStatus(newStatus);
+      setState(() {});
+    }
+  }
+
+  Future<void> _handleAction(Future<bool> Function() action) async {
+    setState(() => _isLoading = true);
+    try {
+      final success = await action();
+      if (success) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        await _updateStatus();
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('명령 실행에 실패했습니다.')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    final status = widget.device.vacuumStatus;
+    if (status == null) {
+      return AlertDialog(
+        title: const Text('Error'),
+        content: const Text('로봇청소기 상태를 가져올 수 없습니다.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    }
+
+    return AlertDialog(
+      title: Text(widget.device.name),
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.grey[900]
+          : Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
+      elevation: 8,
+      content: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.grey[850]
+              : Colors.grey[50],
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.device.name,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // Status Card
             Card(
+              elevation: 4,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.grey[800]
+                  : Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Status',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(
-                          _currentState == VacuumState.start
-                              ? Icons.play_circle
-                              : _currentState == VacuumState.pause
-                                  ? Icons.pause_circle
-                                  : Icons.home,
-                          color: _currentState == VacuumState.start
-                              ? Colors.green
-                              : _currentState == VacuumState.pause
-                                  ? Colors.orange
-                                  : Colors.blue,
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: widget.device.getStatusColor(),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: widget.device
+                                    .getStatusColor()
+                                    .withOpacity(0.5),
+                                blurRadius: 4,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 12),
                         Text(
-                          _currentState == VacuumState.start
-                              ? 'Cleaning'
-                              : _currentState == VacuumState.pause
-                                  ? 'Paused'
-                                  : 'Returning to Dock',
-                          style: Theme.of(context).textTheme.titleMedium,
+                          '상태: ${status.attributes.status}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.grey[800],
+                          ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Battery Level
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                    const SizedBox(height: 12),
                     Text(
-                      'Battery Level',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    LinearProgressIndicator(
-                      value: _batteryLevel / 100,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        _batteryLevel > 20 ? Colors.green : Colors.red,
+                      '배터리: ${status.attributes.batteryLevel}%',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white70
+                            : Colors.grey[700],
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text('${_batteryLevel.toStringAsFixed(1)}%'),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Cleaning Area
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Current Area',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
                     const SizedBox(height: 8),
                     Text(
-                      _cleaningArea,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Cleaning Time
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Cleaning Time',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${_cleaningTime.inHours}h ${_cleaningTime.inMinutes % 60}m',
-                      style: Theme.of(context).textTheme.titleMedium,
+                      '팬 속도: ${status.attributes.fanSpeed}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white70
+                            : Colors.grey[700],
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 24),
-
-            // Control Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Column(
               children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _currentState = VacuumState.start;
-                    });
-                  },
-                  icon: const Icon(Icons.play_arrow),
-                  label: const Text('Start'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _isLoading
+                        ? null
+                        : () => _handleAction(
+                              () => widget.vacuumService.startVacuum(),
+                            ),
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('START'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _currentState = VacuumState.pause;
-                    });
-                  },
-                  icon: const Icon(Icons.pause),
-                  label: const Text('Pause'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    foregroundColor: Colors.white,
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _isLoading
+                        ? null
+                        : () => _handleAction(
+                              () => widget.vacuumService.pauseVacuum(),
+                            ),
+                    icon: const Icon(Icons.stop),
+                    label: const Text('STOP'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _currentState = VacuumState.returnToDock;
-                    });
-                  },
-                  icon: const Icon(Icons.home),
-                  label: const Text('Return'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _isLoading
+                        ? null
+                        : () => _handleAction(
+                              () async {
+                                final success =
+                                    await widget.vacuumService.pauseVacuum();
+                                if (success) {
+                                  await Future.delayed(
+                                      const Duration(seconds: 1));
+                                  return await widget.vacuumService
+                                      .returnToDock();
+                                }
+                                return false;
+                              },
+                            ),
+                    icon: const Icon(Icons.home),
+                    label: const Text('RETURN'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
                 ),
               ],
             ),
+            if (_isLoading)
+              Padding(
+                padding: const EdgeInsets.only(top: 24.0),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.blue,
+                  ),
+                ),
+              ),
           ],
         ),
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            foregroundColor: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.blue,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          ),
+          child: const Text(
+            '닫기',
+            style: TextStyle(fontSize: 16),
+          ),
+        ),
+      ],
     );
   }
-} 
+}

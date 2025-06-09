@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/device.dart';
 import '../util/smart_device_box.dart';
+import '../services/vacuum_service.dart';
 import 'robot_vacuum_status_page.dart';
 
-class DevicesListPage extends StatelessWidget {
+class DevicesListPage extends StatefulWidget {
   final List<Device> devices;
   final Function(int, bool) onDevicePowerChanged;
   final Function(Device) onDeviceAdded;
@@ -14,6 +15,61 @@ class DevicesListPage extends StatelessWidget {
     required this.onDevicePowerChanged,
     required this.onDeviceAdded,
   });
+
+  @override
+  State<DevicesListPage> createState() => _DevicesListPageState();
+}
+
+class _DevicesListPageState extends State<DevicesListPage> {
+  final VacuumService _vacuumService = VacuumService();
+  bool _isServerConnected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkServerConnection();
+    _startPeriodicStatusCheck();
+  }
+
+  Future<void> _checkServerConnection() async {
+    final isConnected = await _vacuumService.checkServerHealth();
+    setState(() {
+      _isServerConnected = isConnected;
+    });
+    if (!isConnected) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('서버에 연결할 수 없습니다.')),
+        );
+      }
+    }
+  }
+
+  void _startPeriodicStatusCheck() {
+    Future.delayed(const Duration(seconds: 5), () async {
+      if (!mounted) return;
+
+      // 서버 연결 상태 확인
+      await _checkServerConnection();
+
+      // 로봇청소기 상태 업데이트
+      if (_isServerConnected) {
+        for (int i = 0; i < widget.devices.length; i++) {
+          final device = widget.devices[i];
+          if (device.isVacuum) {
+            final status = await _vacuumService.getVacuumStatus();
+            if (status != null) {
+              device.updateVacuumStatus(status);
+              widget.onDevicePowerChanged(i, device.powerOn);
+            }
+          }
+        }
+      }
+
+      // 다음 주기 실행
+      _startPeriodicStatusCheck();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +113,9 @@ class DevicesListPage extends StatelessWidget {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: devices.length + 1,
+              itemCount: widget.devices.length + 1,
               itemBuilder: (context, index) {
-                if (index == devices.length) {
+                if (index == widget.devices.length) {
                   return Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: OutlinedButton(
@@ -94,7 +150,7 @@ class DevicesListPage extends StatelessWidget {
                   );
                 }
 
-                final device = devices[index];
+                final device = widget.devices[index];
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 8.0),
@@ -115,35 +171,53 @@ class DevicesListPage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      subtitle: Text(
-                        device.powerOn ? 'Connected' : 'Disconnected',
-                        style: TextStyle(
-                          color: device.powerOn
-                              ? Colors.green
-                              : Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.5),
-                        ),
-                      ),
+                      subtitle: device.isVacuum && device.vacuumStatus != null
+                          ? Text(
+                              device.vacuumStatus!.attributes.status,
+                              style: TextStyle(
+                                color: device.getStatusColor(),
+                              ),
+                            )
+                          : Text(
+                              device.powerOn ? 'Connected' : 'Disconnected',
+                              style: TextStyle(
+                                color: device.powerOn
+                                    ? Colors.green
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.5),
+                              ),
+                            ),
                       trailing: GestureDetector(
-                        onTap: () =>
-                            onDevicePowerChanged(index, !device.powerOn),
+                        onTap: () {
+                          if (device.isVacuum) {
+                            _handleVacuumAction(context, device, index);
+                          } else {
+                            widget.onDevicePowerChanged(index, !device.powerOn);
+                          }
+                        },
                         child: Container(
                           padding: const EdgeInsets.all(8.0),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: device.powerOn
-                                ? Colors.green
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .onSurface
-                                    .withOpacity(0.2),
+                            color: device.isVacuum
+                                ? device.getStatusColor()
+                                : (device.powerOn
+                                    ? Colors.green
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withOpacity(0.2)),
                           ),
                           child: Icon(
-                            device.powerOn
-                                ? Icons.power_settings_new
-                                : Icons.power_off,
+                            device.isVacuum
+                                ? (device.isCleaning
+                                    ? Icons.pause
+                                    : Icons.play_arrow)
+                                : (device.powerOn
+                                    ? Icons.power_settings_new
+                                    : Icons.power_off),
                             color: device.powerOn
                                 ? Colors.white
                                 : Theme.of(context).colorScheme.onSurface,
@@ -152,11 +226,13 @@ class DevicesListPage extends StatelessWidget {
                         ),
                       ),
                       onTap: () {
-                        if (device.name.toLowerCase().contains('vacuum')) {
+                        if (device.isVacuum) {
                           showDialog(
                             context: context,
-                            builder: (context) =>
-                                RobotVacuumStatusPage(device: device),
+                            builder: (context) => RobotVacuumStatusPage(
+                              device: device,
+                              vacuumService: _vacuumService,
+                            ),
                           );
                         }
                       },
@@ -169,6 +245,46 @@ class DevicesListPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _handleVacuumAction(
+      BuildContext context, Device device, int index) async {
+    // 현재 상태 확인
+    final currentStatus = await _vacuumService.getVacuumStatus();
+    if (currentStatus == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('로봇청소기 상태를 확인할 수 없습니다.')),
+        );
+      }
+      return;
+    }
+
+    bool success = false;
+    if (currentStatus.isDocked) {
+      // 도킹 상태일 때 청소 시작
+      success = await _vacuumService.startVacuum();
+    } else if (currentStatus.isCleaning) {
+      // 청소 중일 때 일시정지 후 귀환
+      success = await _vacuumService.pauseVacuum();
+      if (success) {
+        await Future.delayed(const Duration(seconds: 1));
+        success = await _vacuumService.returnToDock();
+      }
+    }
+
+    if (success) {
+      // 상태 업데이트
+      final newStatus = await _vacuumService.getVacuumStatus();
+      if (newStatus != null) {
+        device.updateVacuumStatus(newStatus);
+        widget.onDevicePowerChanged(index, device.powerOn);
+      }
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('명령 실행에 실패했습니다.')),
+      );
+    }
   }
 
   void _showAddDeviceDialog(BuildContext context) {
@@ -290,7 +406,7 @@ class DevicesListPage extends StatelessWidget {
           TextButton(
             onPressed: () {
               if (deviceName.isNotEmpty) {
-                onDeviceAdded(
+                widget.onDeviceAdded(
                   Device(
                     name: deviceName,
                     iconPath: deviceTypes[selectedType]!,

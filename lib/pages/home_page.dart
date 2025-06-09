@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../util/smart_device_box.dart';
 import '../models/device.dart';
+import '../services/vacuum_service.dart';
 
 class HomePage extends StatefulWidget {
   final List<Device> devices;
@@ -23,6 +24,55 @@ class _HomePageState extends State<HomePage> {
   // padding constants
   final double horizontalPadding = 40;
   final double verticalPadding = 25;
+  final VacuumService _vacuumService = VacuumService();
+  bool _isServerConnected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkServerConnection();
+    _startPeriodicStatusCheck();
+  }
+
+  Future<void> _checkServerConnection() async {
+    final isConnected = await _vacuumService.checkServerHealth();
+    setState(() {
+      _isServerConnected = isConnected;
+    });
+    if (!isConnected) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('서버에 연결할 수 없습니다.')),
+        );
+      }
+    }
+  }
+
+  void _startPeriodicStatusCheck() {
+    Future.delayed(const Duration(seconds: 5), () async {
+      if (!mounted) return;
+
+      // 서버 연결 상태 확인
+      await _checkServerConnection();
+
+      // 로봇청소기 상태 업데이트
+      if (_isServerConnected) {
+        for (int i = 0; i < widget.devices.length; i++) {
+          final device = widget.devices[i];
+          if (device.isVacuum) {
+            final status = await _vacuumService.getVacuumStatus();
+            if (status != null) {
+              device.updateVacuumStatus(status);
+              widget.onDevicePowerChanged(i, device.powerOn);
+            }
+          }
+        }
+      }
+
+      // 다음 주기 실행
+      _startPeriodicStatusCheck();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,10 +165,10 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (context, index) {
                   final device = widget.devices[index];
                   return SmartDeviceBox(
-                    smartDeviceName: device.name,
-                    iconPath: device.iconPath,
-                    powerOn: device.powerOn,
-                    onChanged: (value) => widget.onDevicePowerChanged(index, value),
+                    device: device,
+                    onChanged: (value) =>
+                        widget.onDevicePowerChanged(index, value),
+                    vacuumService: _vacuumService,
                   );
                 },
               ),
@@ -142,7 +192,8 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.95),
+        backgroundColor:
+            Theme.of(context).colorScheme.surface.withOpacity(0.95),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
@@ -167,12 +218,16 @@ class _HomePageState extends State<HomePage> {
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.2),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -198,7 +253,10 @@ class _HomePageState extends State<HomePage> {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.2),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
