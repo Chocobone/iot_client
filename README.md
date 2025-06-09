@@ -2,6 +2,10 @@
 
 Flutter로 개발된 스마트홈 IoT 클라이언트 애플리케이션입니다. 이 앱은 다양한 스마트 기기들을 모니터링하고 제어할 수 있는 직관적인 인터페이스를 제공합니다.
 
+
+## 프로젝트 시스템 아키텍처
+![아키텍처](./project_architecture.png)
+
 ## 주요 기능
 
 ### 1. 스마트 기기 제어
@@ -64,7 +68,7 @@ lib/
 ### 설치 및 실행
 1. 저장소 클론
 ```bash
-git clone [repository-url]
+git clone https://github.com/Chocobone/iot_client.git
 cd iot_client
 ```
 
@@ -94,9 +98,3 @@ flutter run
 ## 라이선스
 
 이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
-
-## 연락처
-
-프로젝트 관리자 - [이메일 주소]
-
-프로젝트 링크: [repository-url]
